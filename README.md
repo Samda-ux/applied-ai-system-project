@@ -44,6 +44,12 @@
 
 ## Sample Interactions
 
+### 1. LLM mode (`--llm`)
+
+Input: `a nice happy upbeat song`
+
+```text
+> python src/main.py --llm
 Loading songs from data/songs.csv...
 Loaded songs: 68
 
@@ -53,7 +59,7 @@ Describe what you want to listen to: a nice happy upbeat song
 Why these picks: All three songs are tagged as happy with fairly high energy (0.70 to 0.74) and bright valence (0.78 to 0.86), which matches your request for something upbeat. "Golden Hour Drive" by Neon Echo has the sunniest feel of the group at 0.86 valence, and "Sweet Summer Synth" by Indigo Parade is the most danceable at 0.79, with a steady 122 BPM. If you want something more lively and acoustic, "Bebop Sprint" by Quincy Hale Trio is a fast jazz pick at 176 BPM.
 
 ============================================================
-LLM: A NICE HAPPY UPBEAT SONG  
+LLM: A NICE HAPPY UPBEAT SONG
 ============================================================
 Profile: {'energy': 0.7, 'valence': 0.85, 'danceability': 0.7, 'mood': 'happy'}
 
@@ -124,6 +130,259 @@ Reasons: - mood match: happy (+2.0) - energy 0.80 vs target 0.70 (+1.80) - dance
 ---
 
 No more recommendations.
+```
+
+### 2. LLM mode: study request (RAG + confidence check)
+
+Input: `something to focus on while studying late at night`. The first attempt is a 93% match, so no retry is needed. The explanation only cites songs and values from the retrieved rows.
+
+```text
+> python src/main.py --llm
+Describe what you want to listen to: "something to focus on while studying late at night"
+[attempt 1: {'energy': 0.25, 'valence': 0.4, 'danceability': 0.35, 'acousticness': 0.7, 'tempo_bpm': 75.0, 'genre': 'lofi', 'mood': 'focused'} -> best 'Rainy Window Notes' (93% match)]
+
+Why these picks: These three lofi tracks suit a late-night study session because they're all low-energy (0.33 to 0.40) and slow (74 to 80 BPM), so they won't pull your attention away from your work. "Rainy Window Notes" by Paper Lanterns and "Focus Flow" by LoRoom are both tagged with a focused mood and have a warm, acoustic feel, which is why they ranked highest. "Late Bus Home" by Cloud Tenant is tagged moody rather than focused, but it has the same gentle tempo and lofi sound, making it a calmer, slightly more reflective choice for the later hours.
+
+============================================================
+LLM: "SOMETHING TO FOCUS ON WHILE STUDYING LATE AT NIGHT"
+============================================================
+Profile: {'energy': 0.25, 'valence': 0.4, 'danceability': 0.35, 'acousticness': 0.7, 'tempo_bpm': 75.0, 'genre': 'lofi', 'mood': 'focused'}
+
+#1 Rainy Window Notes (Paper Lanterns)
+Score: 9.81
+Reasons: - genre match: lofi (+3.0) - mood match: focused (+2.0) - energy 0.33 vs target 0.25 (+1.84) - danceability 0.57 vs target 0.35 (+0.78) - valence 0.52 vs target 0.40 (+0.88) - acousticness 0.88 vs target 0.70 (+0.82) - tempo 74 vs target 75 BPM (+0.49)
+
+---
+
+#2 Focus Flow (LoRoom)
+Score: 9.65
+Reasons: - genre match: lofi (+3.0) - mood match: focused (+2.0) - energy 0.40 vs target 0.25 (+1.70) - danceability 0.60 vs target 0.35 (+0.75) - valence 0.59 vs target 0.40 (+0.81) - acousticness 0.78 vs target 0.70 (+0.92) - tempo 80 vs target 75 BPM (+0.47)
+
+---
+
+#3 Late Bus Home (Cloud Tenant)
+Score: 7.95
+Reasons: - genre match: lofi (+3.0) - energy 0.38 vs target 0.25 (+1.74) - danceability 0.60 vs target 0.35 (+0.75) - valence 0.40 vs target 0.40 (+1.00) - acousticness 0.74 vs target 0.70 (+0.96) - tempo 76 vs target 75 BPM (+0.49)
+
+---
+
+#4 Sleepy Tape Deck (LoRoom)
+Score: 7.88
+Reasons: - genre match: lofi (+3.0) - energy 0.30 vs target 0.25 (+1.90) - danceability 0.55 vs target 0.35 (+0.80) - valence 0.58 vs target 0.40 (+0.82) - acousticness 0.82 vs target 0.70 (+0.88) - tempo 70 vs target 75 BPM (+0.47)
+
+---
+
+#5 Midnight Coding (LoRoom)
+Score: 7.71
+Reasons: - genre match: lofi (+3.0) - energy 0.42 vs target 0.25 (+1.66) - danceability 0.62 vs target 0.35 (+0.73) - valence 0.56 vs target 0.40 (+0.84) - acousticness 0.71 vs target 0.70 (+0.99) - tempo 78 vs target 75 BPM (+0.48)
+
+---
+
+Showing #1-#5 of 10 (scroll up to see #1)
+Show the next 4 options? (y/n):
+```
+
+### 3. LLM mode: genre not in the catalog (k-pop)
+
+The catalog has no k-pop, so the validator falls back to pop. The system still finds a strong pop/melancholy match (98%), and the explanation says honestly that none of the songs are k-pop.
+
+```text
+> python src/main.py --llm
+Describe what you want to listen to: dreamy k-pop for a rainy day
+  [attempt 1: {'energy': 0.4, 'valence': 0.4, 'danceability': 0.55, 'acousticness': 0.4, 'tempo_bpm': 95.0, 'genre': 'pop', 'mood': 'melancholy'} -> best 'Lonely Satellite' (98% match)]
+
+Why these picks: None of these songs are tagged k-pop, so they're the closest pop matches rather than true k-pop picks. "Lonely Satellite" by Mira Kane is the best fit for a rainy day: it's melancholy, with low energy (0.45), a slow 92 BPM tempo, and a fairly acoustic feel. "Paper Hearts" by Lila Marsh has a softer romantic mood and moderate energy, which suits a gentle, wistful mood. "Golden Hour Drive" by Neon Echo is much brighter and happier (valence 0.86), so it's the least rainy option, but it offers an upbeat contrast.
+
+============================================================
+             LLM: DREAMY K-POP FOR A RAINY DAY
+============================================================
+Profile: {'energy': 0.4, 'valence': 0.4, 'danceability': 0.55, 'acousticness': 0.4, 'tempo_bpm': 95.0, 'genre': 'pop', 'mood': 'melancholy'}
+
+#1  Lonely Satellite  (Mira Kane)
+    Score: 10.27
+    Reasons:
+      - genre match: pop (+3.0)
+      - mood match: melancholy (+2.0)
+      - energy 0.45 vs target 0.40 (+1.90)
+      - danceability 0.55 vs target 0.55 (+1.00)
+      - valence 0.30 vs target 0.40 (+0.90)
+      - acousticness 0.42 vs target 0.40 (+0.98)
+      - tempo 92 vs target 95 BPM (+0.48)
+------------------------------------------------------------
+
+#2  Paper Hearts  (Lila Marsh)
+    Score: 7.62
+    Reasons:
+      - genre match: pop (+3.0)
+      - energy 0.58 vs target 0.40 (+1.64)
+      - danceability 0.70 vs target 0.55 (+0.85)
+      - valence 0.72 vs target 0.40 (+0.68)
+      - acousticness 0.38 vs target 0.40 (+0.98)
+      - tempo 102 vs target 95 BPM (+0.46)
+------------------------------------------------------------
+
+#3  Golden Hour Drive  (Neon Echo)
+    Score: 6.88
+    Reasons:
+      - genre match: pop (+3.0)
+      - energy 0.74 vs target 0.40 (+1.32)
+      - danceability 0.77 vs target 0.55 (+0.78)
+      - valence 0.86 vs target 0.40 (+0.54)
+      - acousticness 0.24 vs target 0.40 (+0.84)
+      - tempo 116 vs target 95 BPM (+0.40)
+------------------------------------------------------------
+
+#4  Sunrise City  (Neon Echo)
+    Score: 6.65
+    Reasons:
+      - genre match: pop (+3.0)
+      - energy 0.82 vs target 0.40 (+1.16)
+      - danceability 0.79 vs target 0.55 (+0.76)
+      - valence 0.84 vs target 0.40 (+0.56)
+      - acousticness 0.18 vs target 0.40 (+0.78)
+      - tempo 118 vs target 95 BPM (+0.39)
+------------------------------------------------------------
+
+#5  Weekend Anthem  (The Brightsides)
+    Score: 6.53
+    Reasons:
+      - genre match: pop (+3.0)
+      - energy 0.81 vs target 0.40 (+1.18)
+      - danceability 0.83 vs target 0.55 (+0.72)
+      - valence 0.89 vs target 0.40 (+0.51)
+      - acousticness 0.15 vs target 0.40 (+0.75)
+      - tempo 120 vs target 95 BPM (+0.38)
+------------------------------------------------------------
+
+Showing #1-#5 of 10 (scroll up to see #1)
+Show the next 4 options? (y/n):
+```
+
+### 4. Guardrail: off-topic request
+
+Input: `what's the capital of France?`. The LLM flags it as not a music request, and the program refuses instead of recommending songs.
+
+```text
+> python src/main.py --llm
+Describe what you want to listen to: "what's the capital of France?"
+Sorry, I couldn't turn that into a music request.
+```
+
+### 5. Normal mode (built-in profiles, no API key)
+
+```text
+> python src/main.py
+Loading songs from data/songs.csv...
+Loaded songs: 68
+
+============================================================
+                      HIGH-ENERGY POP
+============================================================
+Profile: {'genre': 'pop', 'mood': 'happy', 'energy': 0.8, 'tempo_bpm': 120, 'danceability': 0.8}
+
+#1  Sunrise City  (Neon Echo)
+    Score: 8.44
+    Reasons:
+      - genre match: pop (+3.0)
+      - mood match: happy (+2.0)
+      - energy 0.82 vs target 0.80 (+1.96)
+      - danceability 0.79 vs target 0.80 (+0.99)
+      - tempo 118 vs target 120 BPM (+0.49)
+------------------------------------------------------------
+
+#2  Golden Hour Drive  (Neon Echo)
+    Score: 8.33
+    Reasons:
+      - genre match: pop (+3.0)
+      - mood match: happy (+2.0)
+      - energy 0.74 vs target 0.80 (+1.88)
+      - danceability 0.77 vs target 0.80 (+0.97)
+      - tempo 116 vs target 120 BPM (+0.48)
+------------------------------------------------------------
+
+#3  Weekend Anthem  (The Brightsides)
+    Score: 6.45
+    Reasons:
+      - genre match: pop (+3.0)
+      - energy 0.81 vs target 0.80 (+1.98)
+      - danceability 0.83 vs target 0.80 (+0.97)
+      - tempo 120 vs target 120 BPM (+0.50)
+------------------------------------------------------------
+...
+```
+
+## Reliability and Guardrail Results
+
+### Offline test suite (no API key)
+
+```text
+> python -m pytest -v
+collecting ... collected 17 items
+
+tests/test_llm_extractor.py::test_parse_json_handles_fences_and_prose PASSED [  5%]
+tests/test_llm_extractor.py::test_validate_clamps_and_drops_unknowns PASSED [ 11%]
+tests/test_llm_extractor.py::test_off_topic_passes_through PASSED        [ 17%]
+tests/test_llm_extractor.py::test_unparseable_reply_returns_error PASSED [ 23%]
+tests/test_llm_extractor.py::test_extracted_prefs_drive_recommendations PASSED [ 29%]
+tests/test_llm_extractor.py::test_same_request_gives_consistent_results PASSED [ 35%]
+tests/test_llm_extractor.py::test_retry_revises_weak_match PASSED        [ 41%]
+tests/test_llm_extractor.py::test_no_retry_when_first_match_is_good PASSED [ 47%]
+tests/test_llm_extractor.py::test_explanation_prompt_contains_retrieved_songs PASSED [ 52%]
+tests/test_llm_live.py::test_study_request_gives_low_energy SKIPPED      [ 58%]
+tests/test_llm_live.py::test_gym_request_gives_high_energy SKIPPED (...) [ 64%]
+tests/test_llm_live.py::test_off_topic_request_is_rejected SKIPPED (...) [ 70%]
+tests/test_llm_live.py::test_retry_pipeline_finds_a_good_match SKIPPED   [ 76%]
+tests/test_llm_live.py::test_explanation_mentions_a_retrieved_song SKIPPED [ 82%]
+tests/test_llm_live.py::test_same_request_is_mostly_consistent SKIPPED   [ 88%]
+tests/test_recommender.py::test_recommend_returns_songs_sorted_by_score PASSED [ 94%]
+tests/test_recommender.py::test_explain_recommendation_returns_non_empty_string
+tests/test_llm_live.py::test_study_request_gives_low_energy PASSED [ 16%]
+tests/test_llm_live.py::test_gym_request_gives_high_energy PASSED [ 33%]
+tests/test_llm_live.py::test_off_topic_request_is_rejected PASSED [ 50%]
+tests/test_llm_live.py::test_retry_pipeline_finds_a_good_match PASSED [ 66%]
+tests/test_llm_live.py::test_explanation_mentions_a_retrieved_song PASSED [ 83%]
+tests/test_llm_live.py::test_same_request_is_mostly_consistent PASSED [100%]
+
+======================== 17 passed ========================
+```
+
+### Live LLM tests (real Claude API)
+
+```text
+> python -m pytest tests/test_llm_live.py -v
+tests/test_llm_live.py::test_study_request_gives_low_energy PASSED [ 16%]
+tests/test_llm_live.py::test_gym_request_gives_high_energy PASSED [ 33%]
+tests/test_llm_live.py::test_off_topic_request_is_rejected PASSED [ 50%]
+tests/test_llm_live.py::test_retry_pipeline_finds_a_good_match PASSED [ 66%]
+tests/test_llm_live.py::test_explanation_mentions_a_retrieved_song PASSED [ 83%]
+tests/test_llm_live.py::test_same_request_is_mostly_consistent PASSED [100%]
+6 passed in 14.09s
+```
+
+These cover the off-topic guardrail, the agentic retry, RAG grounding and consistency against the real model. See [model_card.md](model_card.md).
+
+### Guardrail: missing API key
+
+```text
+> python src/main.py --llm
+Loading songs from data/songs.csv...
+Loaded songs: 68
+
+Describe what you want to listen to: play me something chill
+Sorry, the AI service failed: "Could not resolve authentication method. Expected one of api_key, auth_token, or credentials to be set. Or for the `Authorization` header to be explicitly omitted"
+```
+
+### Guardrail: empty request
+
+```text
+> python src/main.py --llm
+Loading songs from data/songs.csv...
+Loaded songs: 68
+
+Describe what you want to listen to:
+```
+
+The program exits cleanly without calling the LLM.
 
 ## Design Decisions
 

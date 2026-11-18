@@ -1,0 +1,37 @@
+flowchart TD
+    %% ---------- Input ----------
+    U([User request<br/>e.g. 'something to focus on while studying']) --> MAIN[main.py --llm]
+    CSV[(data/songs.csv<br/>68 songs + metadata)] --> MAIN
+
+    %% ---------- Agent: extract, check, retry ----------
+    subgraph AGENT[Agent: recommend_with_retry]
+        EXT[LLM Extractor<br/>Claude turns text into preferences<br/>prompt lists only catalog genres/moods]
+        VAL{Validator<br/>valid JSON? on-topic?}
+        SCORE[Scorer / Retriever<br/>score_song + recommend_songs<br/>ranks every song]
+        EVAL{Evaluator<br/>match_quality >= 60%?}
+        EXT --> VAL
+        VAL -- "clamp numbers,<br/>drop unknown genres/moods" --> SCORE
+        SCORE --> EVAL
+        EVAL -- "no: feedback to LLM<br/>(max 2 attempts)" --> EXT
+    end
+
+    MAIN --> EXT
+    VAL -- "off-topic / unparseable /<br/>API error" --> ERR([Friendly error message,<br/>no crash])
+
+    %% ---------- RAG explanation ----------
+    EVAL -- yes --> RAG[RAG Explainer<br/>top songs' real rows sent to Claude<br/>'only use the provided data']
+    RAG --> OUT([Output: ranked songs + scores +<br/>reasons + grounded explanation])
+
+    %% ---------- Human & testing checks ----------
+    subgraph CHECK[Testing and human review]
+        T1[Offline pytest<br/>mocked LLM: parsing, validation,<br/>retry loop, RAG prompt]
+        T2[Live pytest<br/>real Claude: off-topic, retry,<br/>grounding, consistency]
+        H[Human evaluation<br/>reviews outputs in the<br/>README results table]
+    end
+
+    T1 -. tests .-> AGENT
+    T2 -. tests .-> AGENT
+    T2 -. tests .-> RAG
+    OUT -. reviewed by .-> H
+    ERR -. reviewed by .-> H
+w
