@@ -129,18 +129,29 @@ No more recommendations.
 
 - **The code decides what the LLM extracts** The LLM only turns text into preferences; the ranking is done by a deterministic scoring function. Less "creative" than letting the LLM pick songs, but results are repeatable and explainable based on the current limited data set.
 - **Validate what the LLM returns.** Clamping numbers and dropping unknown genres protects the scorer from bad output. Trade-off: if the LLM picks a genre we don't have, that preference is lost instead of mapped to something similar.
-- **Retry at most twice.** The self-check catches weak matches without making the program slow or expensive. Trade-off: some requests just can't be matched well by an 18-song catalog, and retrying won't fix that.
+- **Retry at most twice.** The self-check catches weak matches without making the program slow or expensive. Trade-off: some requests just can't be matched well by a 68-song catalog, and retrying won't fix that.
 - **Explanations use only retrieved data (RAG).** The explanation prompt contains the real song rows and tells the LLM not to invent details.
-- **Fake clients in tests.** LLM tests use a fake client with canned replies, so they run for free, offline, and always give the same result.
 
 ## Testing Summary
 
-- **11 automated tests, all passing** (`python -m pytest`):
-  - JSON parsing handles code fences and extra text from the LLM.
-  - The validator clamps out-of-range numbers and drops unknown values.
-  - Off-topic and unparseable replies return an error instead of crashing.
-  - Consistency: the same request run 5 times gives the same top 5.
-  - The retry loop runs again only when the first match is weak.
-  - The explanation prompt contains the real retrieved songs.
-  -
-  - **Not covered:** the tests don't call the real LLM, so they can't measure how good its extractions are.
+- 11 out of 11 automated tests pass.
+- **Automated tests**: 11 tests covering JSON parsing, validation, error cases, consistency, the retry loop and the RAG prompt.
+- **Confidence scoring:** every LLM request gets a match quality (best song's score / highest possible score). Below 60%, the system retries.
+- **Error handling and logging:** each attempt is printed. API failures, off-topic and unparseable replies print a message instead of crashing.
+- **Human evaluation:** I reviewed the results in the table below.
+
+**Evaluation results** (68-song catalog):
+
+| Test Input                           | Evaluation Criteria                   | Result                                                                             |
+| ------------------------------------ | ------------------------------------- | ---------------------------------------------------------------------------------- |
+| High-Energy Pop profile              | #1 is pop, happy, high energy         | Pass. Sunrise City, score 8.44                                                     |
+| Chill Lofi profile                   | #1 is lofi, chill, low energy         | Pass. Midnight Coding, score 8.43                                                  |
+| Deep Intense Rock profile            | #1 is rock, intense, high energy      | Pass. Highway Thunder, score 8.47                                                  |
+| Sad but Hyped (sad mood, energy 0.9) | Balances conflicting preferences      | Partial. Rain on the Delta (6.59) matches genre and mood but has low energy (0.38) |
+| Unknown Genre (k-pop, dreamy)        | No crash; falls back to closest songs | Pass. Golden Hour Drive, low score 3.40 shows a weak match                         |
+| Out-of-Range Energy (1.5)            | No crash; still ranks sensibly        | Pass. Ashes in the Wire (metal, angry), score 7.38                                 |
+| Empty profile                        | No crash                              | Partial. Runs, but every song scores 0.00, so the order is meaningless             |
+| Empty text in `--llm` mode           | Exits gracefully                      | Pass                                                                               |
+| `--llm` with no API key              | Error message, no crash               | Pass. Prints "Sorry, the AI service failed: ..."                                   |
+| Same request 5 times (test)          | Identical top 5 each time             | Pass                                                                               |
+| Weak first LLM guess (test)          | Retries with feedback                 | Pass. 2nd attempt revised mood to chill                                            |
