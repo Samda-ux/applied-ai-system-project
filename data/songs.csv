@@ -17,3 +17,53 @@ id,title,artist,genre,mood,energy,tempo_bpm,valence,danceability,acousticness
 16,Island Sun Fever,Sol Rasta Collective,reggae,uplifting,0.60,76,0.88,0.80,0.45
 17,Pulse Theory,Kinetic Grid,edm,euphoric,0.95,128,0.90,0.92,0.04
 18,Rain on the Delta,Big Earl Moss,blues,sad,0.38,70,0.20,0.48,0.75
+19,Golden Hour Drive,Neon Echo,pop,happy,0.74,116,0.86,0.77,0.24
+20,Paper Hearts,Lila Marsh,pop,romantic,0.58,102,0.72,0.70,0.38
+21,Electric Confetti,Sugar Vandal,pop,euphoric,0.88,126,0.92,0.86,0.08
+22,Lonely Satellite,Mira Kane,pop,melancholy,0.45,92,0.30,0.55,0.42
+23,Weekend Anthem,The Brightsides,pop,uplifting,0.81,120,0.89,0.83,0.15
+24,Sleepy Tape Deck,LoRoom,lofi,relaxed,0.30,70,0.58,0.55,0.82
+25,Rainy Window Notes,Paper Lanterns,lofi,focused,0.33,74,0.52,0.57,0.88
+26,Late Bus Home,Cloud Tenant,lofi,moody,0.38,76,0.40,0.60,0.74
+27,Cereal at 2AM,Cloud Tenant,lofi,chill,0.44,82,0.63,0.66,0.69
+28,Highway Thunder,Voltline,rock,intense,0.89,148,0.52,0.60,0.12
+29,Broken Compass,The Rusted Kings,rock,angry,0.86,140,0.30,0.50,0.15
+30,Summer Garage,Fuzz Parade,rock,happy,0.79,136,0.80,0.62,0.20
+31,Old Polaroids,The Rusted Kings,rock,nostalgic,0.62,112,0.55,0.52,0.40
+32,Glacier Drift,Orbit Bloom,ambient,relaxed,0.18,56,0.55,0.30,0.95
+33,Deep Field,Hollow Sky,ambient,focused,0.25,64,0.48,0.35,0.90
+34,Northern Echoes,Hollow Sky,ambient,melancholy,0.22,58,0.28,0.25,0.93
+35,Blue Note Sunday,Slow Stereo,jazz,chill,0.32,88,0.66,0.50,0.91
+36,Smoky Lounge,The Velvet Five,jazz,romantic,0.40,94,0.62,0.58,0.87
+37,Bebop Sprint,Quincy Hale Trio,jazz,happy,0.70,176,0.78,0.64,0.80
+38,Chrome Skyline,Neon Echo,synthwave,euphoric,0.84,118,0.80,0.78,0.10
+39,Arcade Ghosts,Pixel Vow,synthwave,nostalgic,0.68,108,0.58,0.72,0.14
+40,Neon Rain,Pixel Vow,synthwave,moody,0.60,100,0.38,0.66,0.18
+41,Sweet Summer Synth,Indigo Parade,indie pop,happy,0.72,122,0.84,0.79,0.32
+42,Polaroid Love,Indigo Parade,indie pop,romantic,0.55,104,0.74,0.68,0.48
+43,Window Seat,June Harbor,indie pop,chill,0.46,96,0.64,0.62,0.55
+44,Block Party,Kilo Verse,hip hop,happy,0.80,98,0.82,0.88,0.10
+45,Cold Streets,Dre Calloway,hip hop,angry,0.83,90,0.28,0.80,0.08
+46,Midnight Bars,Dre Calloway,hip hop,moody,0.65,86,0.40,0.78,0.15
+47,Gym Grind,Max Pulse,hip hop,intense,0.90,100,0.60,0.86,0.05
+48,Silk and Smoke,Mara Lune,r&b,chill,0.45,82,0.60,0.72,0.42
+49,Slow Burn,Jaylen Vos,r&b,romantic,0.50,78,0.66,0.70,0.36
+50,Heartbreak Hotel Room,Jaylen Vos,r&b,sad,0.40,74,0.22,0.62,0.45
+51,Iron Tempest,Grave Signal,metal,intense,0.96,172,0.30,0.48,0.02
+52,Ruin and Rage,Black Orchard,metal,angry,0.99,180,0.18,0.42,0.02
+53,Backroad Sunset,The Holloway Creek,country,happy,0.64,108,0.82,0.66,0.72
+54,Whiskey Letters,Callie Rowe,country,sad,0.42,84,0.25,0.50,0.78
+55,Grandpa's Truck,Callie Rowe,country,nostalgic,0.50,96,0.65,0.55,0.83
+56,Rain Waltz,Elise Varga,classical,romantic,0.26,72,0.50,0.22,0.98
+57,Allegro in Flight,Vienna String Ensemble,classical,uplifting,0.55,138,0.75,0.30,0.96
+58,Requiem for Autumn,Vienna String Ensemble,classical,sad,0.18,60,0.15,0.15,0.98
+59,Sunday Skank,Sol Rasta Collective,reggae,happy,0.62,80,0.86,0.82,0.48
+60,Roots and Rain,Kaya Bloom,reggae,chill,0.48,72,0.70,0.76,0.55
+61,Laser Rave,Kinetic Grid,edm,euphoric,0.97,130,0.88,0.94,0.03
+62,Drop Zone,Bassline Theory,edm,intense,0.94,140,0.70,0.90,0.04
+63,Afterglow,Bassline Theory,edm,chill,0.55,110,0.68,0.76,0.12
+64,Crossroads Moan,Big Earl Moss,blues,sad,0.35,68,0.18,0.45,0.80
+65,Juke Joint Shuffle,Sadie Greer,blues,happy,0.66,118,0.74,0.70,0.68
+66,Campfire Stories,Wren & Willow,folk,nostalgic,0.36,92,0.62,0.48,0.94
+67,River Song,Wren & Willow,folk,relaxed,0.30,84,0.66,0.44,0.95
+68,Fiesta del Sol,Los Cometas,latin,euphoric,0.86,124,0.92,0.90,0.30

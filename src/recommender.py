@@ -1,6 +1,6 @@
 import csv
 from typing import List, Dict, Tuple, Optional
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 
 @dataclass
 class Song:
@@ -38,13 +38,25 @@ class Recommender:
     def __init__(self, songs: List[Song]):
         self.songs = songs
 
+    @staticmethod
+    def _prefs(user: UserProfile) -> Dict:
+        """Convert a UserProfile into the user_prefs dict score_song() expects."""
+        return {
+            "genre": user.favorite_genre,
+            "mood": user.favorite_mood,
+            "energy": user.target_energy,
+            "acousticness": 0.8 if user.likes_acoustic else 0.2,
+        }
+
     def recommend(self, user: UserProfile, k: int = 5) -> List[Song]:
-        # TODO: Implement recommendation logic
-        return self.songs[:k]
+        """Return the k songs that score highest for this user."""
+        prefs = self._prefs(user)
+        return sorted(self.songs, key=lambda s: score_song(prefs, asdict(s))[0], reverse=True)[:k]
 
     def explain_recommendation(self, user: UserProfile, song: Song) -> str:
-        # TODO: Implement explanation logic
-        return "Explanation placeholder"
+        """Return the scoring reasons for one song as a single string."""
+        score, reasons = score_song(self._prefs(user), asdict(song))
+        return f"Score {score:.2f}: " + "; ".join(reasons)
 
 def load_songs(csv_path: str) -> List[Dict]:
     """Load songs from a CSV file into dicts, converting numeric columns to int/float."""
@@ -83,6 +95,12 @@ def score_song(user_prefs: Dict, song: Dict) -> Tuple[float, List[str]]:
         dance_points = 1.0 * (1 - abs(user_prefs["danceability"] - song["danceability"]))
         score += dance_points
         reasons.append(f"danceability {song['danceability']:.2f} vs target {user_prefs['danceability']:.2f} (+{dance_points:.2f})")
+
+    for feature in ("valence", "acousticness"):
+        if feature in user_prefs:
+            points = 1.0 * (1 - abs(user_prefs[feature] - song[feature]))
+            score += points
+            reasons.append(f"{feature} {song[feature]:.2f} vs target {user_prefs[feature]:.2f} (+{points:.2f})")
 
     if "tempo_bpm" in user_prefs:
         # Tempo is in BPM, so scale the gap: 100+ BPM apart earns nothing
